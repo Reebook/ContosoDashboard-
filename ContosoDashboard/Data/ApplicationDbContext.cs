@@ -17,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<ProjectMember> ProjectMembers { get; set; } = null!;
     public DbSet<Announcement> Announcements { get; set; } = null!;
+    public DbSet<Document> Documents { get; set; } = null!;
+    public DbSet<DocumentActivity> DocumentActivities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,6 +65,38 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
+
+        modelBuilder.Entity<Document>(entity =>
+        {
+            entity.Property(d => d.Title).IsRequired().HasMaxLength(255);
+            entity.Property(d => d.Category).HasConversion<string>().HasMaxLength(30).IsRequired();
+            entity.Property(d => d.Description).HasMaxLength(2000);
+            entity.Property(d => d.Tags).HasMaxLength(500);
+            entity.Property(d => d.OriginalFileName).IsRequired().HasMaxLength(255);
+            entity.Property(d => d.ContentType).IsRequired().HasMaxLength(255);
+            entity.Property(d => d.BlobName).IsRequired().HasMaxLength(200);
+            entity.Property(d => d.UploadHash).IsRequired().HasMaxLength(64);
+            entity.Property(d => d.ScanStatus).HasConversion<string>().HasMaxLength(20).IsRequired();
+            entity.HasIndex(d => new { d.UploaderId, d.UploadDateUtc });
+            entity.HasIndex(d => new { d.ProjectId, d.ScanStatus });
+            entity.HasIndex(d => d.Category);
+            entity.HasIndex(d => new { d.ScanStatus, d.NextScanAttemptUtc });
+            entity.HasIndex(d => new { d.UploaderId, d.UploadToken }).IsUnique();
+            entity.HasIndex(d => d.Title);
+            entity.HasOne(d => d.Uploader).WithMany().HasForeignKey(d => d.UploaderId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(d => d.Project).WithMany().HasForeignKey(d => d.ProjectId).OnDelete(DeleteBehavior.Restrict);
+            entity.ToTable(t => t.HasCheckConstraint("CK_Documents_FileSize", "[FileSize] >= 0 AND [FileSize] <= 26214400"));
+        });
+
+        modelBuilder.Entity<DocumentActivity>(entity =>
+        {
+            entity.Property(a => a.DocumentTitle).IsRequired().HasMaxLength(255);
+            entity.Property(a => a.Detail).HasMaxLength(500);
+            entity.Property(a => a.Action).HasConversion<string>().HasMaxLength(30).IsRequired();
+            entity.Property(a => a.Outcome).HasConversion<string>().HasMaxLength(20).IsRequired();
+            entity.HasIndex(a => a.TimestampUtc);
+            // No foreign key by design: audit rows must outlive deleted documents and users.
+        });
 
         // Seed initial data
         SeedData(modelBuilder);

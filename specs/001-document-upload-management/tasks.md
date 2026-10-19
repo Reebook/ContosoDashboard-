@@ -9,9 +9,9 @@
 
 **Purpose**: Create the test/build structure and feature configuration points required by the planned implementation.
 
-- [ ] T001 Create `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj` targeting `net10.0` and add `ContosoDashboard.sln` at the repository root with the web and test projects.
-- [ ] T002 [P] Add xUnit, Microsoft.NET.Test.Sdk, EF Core SQLite/InMemory, ASP.NET Core.Mvc.Testing, and Azure Blob test dependencies to `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj`.
-- [ ] T003 [P] Add non-secret document storage, scanner, and audit-retention configuration keys with safe placeholders to `ContosoDashboard/appsettings.json` and `ContosoDashboard/appsettings.Development.json`.
+- [X] T001 Create `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj` targeting `net10.0` and add `ContosoDashboard.sln` at the repository root with the web and test projects.
+- [X] T002 [P] Add xUnit, Microsoft.NET.Test.Sdk, EF Core SQLite/InMemory, ASP.NET Core.Mvc.Testing, and Azure Blob test dependencies to `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj`.
+- [X] T003 [P] Add non-secret document storage, scanner, and audit-retention configuration keys with safe placeholders to `ContosoDashboard/appsettings.json` and `ContosoDashboard/appsettings.Development.json`.
 
 ---
 
@@ -21,9 +21,9 @@
 
 - [ ] T004 Define and implement the EF migration adoption strategy for the existing `EnsureCreated()` database in `ContosoDashboard/Data/ApplicationDbContext.cs` and `ContosoDashboard/Program.cs`, preserving existing installations while enabling future migrations.
 - [ ] T005 Configure Entra ID OpenID Connect and cookie sign-in from `AzureAd` settings in `ContosoDashboard/Program.cs`; gate the existing mock login to Development only in `ContosoDashboard/Pages/Login.cshtml.cs`.
-- [ ] T006 Add an actor context that requires UserId, name, email, role, and department claims and denies actions with a clear message if any claim is missing in `ContosoDashboard/Services/ActorContext.cs`.
-- [ ] T007 Define the shared request-time authorization interface and access result types used by document reads and management in `ContosoDashboard/Services/IDocumentAuthorizationService.cs`.
-- [ ] T008 [P] Define blob-storage, malware-scanner, and document-audit service contracts and their options in `ContosoDashboard/Services/IDocumentStorage.cs`, `ContosoDashboard/Services/IMalwareScanner.cs`, `ContosoDashboard/Services/IDocumentAuditService.cs`, and `ContosoDashboard/Services/DocumentOptions.cs`.
+- [X] T006 Add an actor context that requires UserId, name, email, role, and department claims and denies actions with a clear message if any claim is missing in `ContosoDashboard/Services/ActorContext.cs`.
+- [X] T007 Define the shared request-time authorization interface and access result types used by document reads and management in `ContosoDashboard/Services/IDocumentAuthorizationService.cs`.
+- [X] T008 [P] Define blob-storage, malware-scanner, and document-audit service contracts and their options in `ContosoDashboard/Services/IDocumentStorage.cs`, `ContosoDashboard/Services/IMalwareScanner.cs`, `ContosoDashboard/Services/IDocumentAuditService.cs`, and `ContosoDashboard/Services/DocumentOptions.cs`.
 
 **Checkpoint**: Base project/test structure, Entra identity context, schema evolution approach, and shared contracts are ready; user stories may now proceed independently subject to their own files and dependencies.
 
@@ -37,20 +37,20 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add upload validation, idempotency, blob/DB compensation, per-file result, and pending/rejected-access tests in `ContosoDashboard.Tests/Services/DocumentUploadTests.cs`.
-- [ ] T010 [P] [US1] Add upload endpoint status-code, multipart metadata, request-size, and audit tests in `ContosoDashboard.Tests/Endpoints/DocumentUploadEndpointTests.cs`.
-- [ ] T011 [P] [US1] Add scan-worker clean/rejected/unavailable/indeterminate retry and replacement-independent quarantine state tests in `ContosoDashboard.Tests/Services/DocumentScanWorkerTests.cs`.
+- [X] T009 [P] [US1] Add upload validation, idempotency, blob/DB compensation, per-file result, and pending/rejected-access tests in `ContosoDashboard.Tests/Services/DocumentUploadTests.cs`.
+- [X] T010 [P] [US1] Add upload endpoint status-code, multipart metadata, request-size, and audit tests in `ContosoDashboard.Tests/Endpoints/DocumentUploadEndpointTests.cs`.
+- [X] T011 [P] [US1] Add scan-worker clean/rejected/unavailable/indeterminate retry and replacement-independent quarantine state tests in `ContosoDashboard.Tests/Services/DocumentScanWorkerTests.cs`.
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Add document enums and `Document` entity in `ContosoDashboard/Models/Document.cs`; enforce these data-model rules verbatim: “Title required ≤255; category in the six values; file ≤25 MB; extension allow-list {.pdf .doc .docx .xls .xlsx .ppt .pptx .txt .jpg .jpeg .png} AND content-type AND magic bytes agree; tags ≤500 chars; project must be one the user is assigned to (or manages) at action time; identity claims (name, email, role, department) all present else deny (REQ-025).” Also implement `ContentType` up to 255, `FileSize` ≤26,214,400, text-stored category max 30, generated blob names, and unique `(UploaderId, UploadToken)`.
-- [ ] T013 [P] [US1] Add the append-only `DocumentActivity` entity in `ContosoDashboard/Models/DocumentActivity.cs` with a title snapshot, no document FK, indexed UTC timestamp, and the data-model rule “Detail string(500)? reason (no content, no PII beyond ids)”.
-- [ ] T014 [US1] Register document/audit DbSets, relationships, required/max-length constraints, indexes, category string conversion, and upload-token uniqueness in `ContosoDashboard/Data/ApplicationDbContext.cs`.
+- [X] T012 [P] [US1] Add document enums and `Document` entity in `ContosoDashboard/Models/Document.cs`; enforce these data-model rules verbatim: “Title required ≤255; category in the six values; file ≤25 MB; extension allow-list {.pdf .doc .docx .xls .xlsx .ppt .pptx .txt .jpg .jpeg .png} AND content-type AND magic bytes agree; tags ≤500 chars; project must be one the user is assigned to (or manages) at action time; identity claims (name, email, role, department) all present else deny (REQ-025).” Also implement `ContentType` up to 255, `FileSize` ≤26,214,400, text-stored category max 30, generated blob names, and unique `(UploaderId, UploadToken)`.
+- [X] T013 [P] [US1] Add the append-only `DocumentActivity` entity in `ContosoDashboard/Models/DocumentActivity.cs` with a title snapshot, no document FK, indexed UTC timestamp, and the data-model rule “Detail string(500)? reason (no content, no PII beyond ids)”.
+- [X] T014 [US1] Register document/audit DbSets, relationships, required/max-length constraints, indexes, category string conversion, and upload-token uniqueness in `ContosoDashboard/Data/ApplicationDbContext.cs`.
 - [ ] T015 [US1] Create a baseline-compatible EF migration for the existing schema plus the new document and activity tables in `ContosoDashboard/Data/Migrations/`; do not rely on `EnsureCreated()` to evolve an existing database.
-- [ ] T016 [P] [US1] Implement private quarantine/clean Azure Blob operations, managed-identity credential use, non-user-derived blob names, promote, stream-read, and delete in `ContosoDashboard/Services/BlobDocumentStorage.cs`.
-- [ ] T017 [P] [US1] Implement the Defender for Storage adapter behind `IMalwareScanner`, returning clean, infected, unavailable, or indeterminate outcomes in `ContosoDashboard/Services/DefenderMalwareScanner.cs`.
-- [ ] T018 [US1] Implement `DocumentAuditService` writes and upload/rejection/scan-result activity recording in `ContosoDashboard/Services/DocumentAuditService.cs` and `ContosoDashboard/Models/DocumentActivity.cs`.
-- [ ] T019 [US1] Implement upload validation, per-file idempotency, quarantine-first persistence, cleanup on DB failure, and pending scan state in `ContosoDashboard/Services/DocumentService.cs`.
+- [X] T016 [P] [US1] Implement private quarantine/clean Azure Blob operations, managed-identity credential use, non-user-derived blob names, promote, stream-read, and delete in `ContosoDashboard/Services/BlobDocumentStorage.cs`.
+- [X] T017 [P] [US1] Implement the Defender for Storage adapter behind `IMalwareScanner`, returning clean, infected, unavailable, or indeterminate outcomes in `ContosoDashboard/Services/DefenderMalwareScanner.cs`.
+- [X] T018 [US1] Implement `DocumentAuditService` writes and upload/rejection/scan-result activity recording in `ContosoDashboard/Services/DocumentAuditService.cs` and `ContosoDashboard/Models/DocumentActivity.cs`.
+- [X] T019 [US1] Implement upload validation, per-file idempotency, quarantine-first persistence, cleanup on DB failure, and pending scan state in `ContosoDashboard/Services/DocumentService.cs`.
 - [ ] T020 [US1] Implement the hosted scan worker with retry backoff (1, 5, 15 minutes, capped at 1 hour), quarantine retention for indeterminate results, clean promotion, rejection cleanup, and operator max-age alert logging in `ContosoDashboard/Services/DocumentScanWorker.cs`.
 - [ ] T021 [US1] Implement `POST /api/documents` multipart upload with documented 201/400/403/409/413/415 behavior and task/project metadata handling in `ContosoDashboard/Endpoints/DocumentEndpoints.cs`.
 - [ ] T022 [US1] Register storage, scanner, service, audit service, hosted worker, request limits, and document endpoints in `ContosoDashboard/Program.cs`.
